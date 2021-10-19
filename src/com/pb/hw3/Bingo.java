@@ -16,7 +16,6 @@ public class Bingo {
         int counter = 0;
         while (true) {
             counter++;
-            System.out.println("Number of attempts to guess the number: " + counter);
             System.out.println("Enter your number (to exit enter \"exit\"): ");
             if (scanner.hasNextInt()) {
                 customNumber = scanner.nextInt();
@@ -26,6 +25,7 @@ public class Bingo {
                     System.out.println("Your number is less than expected!");
                 } else if (customNumber == randNumber) {
                     System.out.println("Congratulations, you guessed the number!");
+                    System.out.println("Number of attempts to guess the number: " + counter);
                     break;
                 } else {
                     System.out.println("Undefined result");

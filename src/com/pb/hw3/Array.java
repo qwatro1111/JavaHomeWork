@@ -30,8 +30,8 @@ public class Array {
         }
 
         System.out.println("Your array: " + Arrays.toString(numbersArr));
-        System.out.println("arraySum: " + arraySum);
-        System.out.println("positiveNumbers: " + positiveNumbers);
+        System.out.println("Sum of array elements: " + arraySum);
+        System.out.println("Number of positive elements: " + positiveNumbers);
 
         for (int i = 0; i < numbersArr.length; i++) {
             for (int j = 0; j < numbersArr.length - 1; j++) {
