@@ -1,5 +1,7 @@
 package com.pb.hw10;
 
+import java.math.BigDecimal;
+
 public class NumBox<T extends Number> {
     private final T[] numbers;
 
@@ -42,10 +44,10 @@ public class NumBox<T extends Number> {
     }
 
     public double sum() {
-        double result = 0.0;
+        double result = 0;
         for (T number: numbers) {
             if (number != null) {
-                result += number.doubleValue();
+                result += new Double(number.toString());
             }
         }
 
