@@ -12,7 +12,7 @@ public class NumBox<T extends Number> {
     public void add(T num) {
         try {
             int index = findPlace();
-            numbers[findPlace()] = num;
+            numbers[index] = num;
         } catch (Exception ex) {
             System.out.println(ex);
         }
