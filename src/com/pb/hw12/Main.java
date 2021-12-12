@@ -68,27 +68,22 @@ public class Main {
 
         Person person = new Person();
 
-        System.out.println("Введите ФИО: ");
-        if (!scanner.hasNext()) {
-            System.out.println("Увы но пользователь не добавлен! Поле ФИО обязательно для заполнения!");
+        addFio(person);
+        if (person.getFio() == null) {
             return;
         }
-        person.setFio(scanner.nextLine());
 
-        System.out.println("Введите адрес для пользователя: ");
+        System.out.println("Введите адрес: ");
         person.setAddress(scanner.nextLine());
 
         boolean endAddedPhone = false;
         while (true) {
-            System.out.println("Если Вы хотите добавить пользователю номер телефона введите \"y\" если хотите продолжить введите \"n\".");
+            System.out.println("Если Вы хотите добавить пользователю номер телефона введите \"y\" если хотите продолжить введите \"n\"");
             System.out.println("Введите команду: ");
             String command = scanner.nextLine();
             switch (command) {
                 case "y":
-                    System.out.println("Введите номер телефона: ");
-                    String phone = scanner.nextLine();
-                    person.addPhone(phone);
-                    System.out.println("Номер добавлен!");
+                    addPhone(person);
                     break;
                 case "n":
                     endAddedPhone = true;
@@ -112,7 +107,7 @@ public class Main {
 
             person.setBirthday(LocalDate.of(birthdayYear, birthdayMonth, birthdayDay));
         } catch (Exception e) {
-            System.out.println("Увы но пользователь не добавлен! Неверно введенная дата рождения!");
+            System.out.println("Неверно введенная дата рождения!");
             return;
         }
 
@@ -243,13 +238,25 @@ public class Main {
         }
     }
 
+    private static void addFio(Person person) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Введите ФИО: ");
+        String fio = scanner.nextLine();
+        if (fio.isEmpty()) {
+            System.out.println("Поле ФИО обязательно для заполнения!");
+        } else {
+            person.setFio(fio);
+        }
+    }
+
     private static void updateFio(Person person) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Введите ФИО: ");
-        if (!scanner.hasNext()) {
-            System.out.println("Увы но пользователь не изменен! Поле ФИО обязательно для заполнения!");
+        String fio = scanner.nextLine();
+        if (fio.isEmpty()) {
+            System.out.println("Поле ФИО обязательно для заполнения!");
         } else {
-            person.setFio(scanner.nextLine());
+            person.setFio(fio);
             System.out.println("Поле ФИО отредактировано!");
         }
     }
@@ -277,7 +284,18 @@ public class Main {
             person.setBirthday(LocalDate.of(birthdayYear, birthdayMonth, birthdayDay));
             System.out.println("Поле дата рождения отредактировано!");
         } catch (Exception e) {
-            System.out.println("Увы но пользователь не добавлен! Неверно введенная дата рождения!");
+            System.out.println("Неверно введенная дата рождения!");
+        }
+    }
+
+    private static void addPhone(Person person) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Введите номер телефона: ");
+        if (!scanner.hasNext()) {
+            System.out.println("Телефон не добавлен, вы не ввкли номер телефона!");
+        } else {
+            person.addPhone(scanner.nextLine());
+            System.out.println("Номер добавлен!");
         }
     }
 
@@ -291,10 +309,7 @@ public class Main {
         String command = scanner.nextLine();
         switch (command) {
             case "add":
-                System.out.println("Введите номер телефона: ");
-                String phone = scanner.nextLine();
-                person.addPhone(phone);
-                System.out.println("Номер добавлен!");
+                addPhone(person);
                 break;
             case "edit":
                 System.out.println("Введите номер телефона: ");
