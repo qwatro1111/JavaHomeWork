@@ -1,18 +1,18 @@
-package com.pb.hw11;
+package com.pb.hw12;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Scanner;
+import java.util.function.Predicate;
 
 public class Main {
-    private static final String PATH_TO_FILE = "src/com/pb/hw11/phoneBook.json";
+    private static final String PATH_TO_FILE = "src/com/pb/hw12/phoneBook.json";
 
     public static void main(String[] args) throws Exception {
         Scanner scanner = new Scanner(System.in);
         PhoneBook phoneBook = new PhoneBook();
 
         boolean endProgram = false;
-
         while (true) {
             System.out.println("Доступные команды");
             System.out.println("\"add\" - добавить пользователя");
@@ -39,13 +39,7 @@ public class Main {
                     printPeople(phoneBook);
                     break;
                 case "edit":
-                    System.out.println("Введите ФИО пользователя: ");
-                    int index = phoneBook.searchPerson(scanner.nextLine());
-                    if (index == -1) {
-                        System.out.println("Пользователь c таким именем не найден!");
-                    } else {
-                        editPerson(phoneBook, index);
-                    }
+                    editPerson(phoneBook);
                     break;
                 case "write":
                     writeFile(phoneBook);
@@ -132,15 +126,15 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Введите ФИО пользователя: ");
         int index = phoneBook.searchPerson(scanner.nextLine());
-        if (index == -1) {
-            System.out.println("Пользователь c таким именем не найден!");
-        } else {
+        if (indexFind(index)) {
             try {
                 phoneBook.removePerson(index);
                 System.out.println("Пользователь удален!");
             } catch (Exception e) {
                 System.out.println("Во время удаления произошла ошибка, повторите пожалуйста позже.");
             }
+        } else {
+            System.out.println("Пользователь c таким именем не найден!");
         }
     }
 
@@ -148,15 +142,15 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Введите ФИО пользователя: ");
         int index = phoneBook.searchPerson(scanner.nextLine());
-        if (index == -1) {
-            System.out.println("Пользователь c таким именем не найден!");
-        } else {
+        if (indexFind(index)) {
             try {
                 System.out.println("Пользователь найден: ");
                 System.out.println(phoneBook.printPerson(index));
             } catch (Exception e) {
                 System.out.println("Во время поиска произошла ошибка, повторите пожалуйста позже.");
             }
+        } else {
+            System.out.println("Пользователь c таким именем не найден!");
         }
     }
 
@@ -187,14 +181,16 @@ public class Main {
         }
     }
 
-    private static void editPerson(PhoneBook phoneBook, int index) {
-        Person person = phoneBook.getPeople().get(index);
-
+    private static void editPerson(PhoneBook phoneBook) {
         Scanner scanner = new Scanner(System.in);
-        int birthdayYear;
-        int birthdayMonth;
-        int birthdayDay;
+        System.out.println("Введите ФИО пользователя: ");
+        int index = phoneBook.searchPerson(scanner.nextLine());
+        if (!indexFind(index)) {
+            System.out.println("Пользователь c таким именем не найден!");
+            return;
+        }
 
+        Person person = phoneBook.getPeople().get(index);
         System.out.println("Для редактирования доступны поля ");
         System.out.println("\"fio\" - ФИО");
         System.out.println("\"address\" - адрес");
@@ -204,81 +200,16 @@ public class Main {
         String field = scanner.nextLine();
         switch (field) {
             case "fio":
-                System.out.println("Введите ФИО: ");
-                if (!scanner.hasNext()) {
-                    System.out.println("Увы но пользователь не изменен! Поле ФИО обязательно для заполнения!");
-                } else {
-                    person.setFio(scanner.nextLine());
-                    System.out.println("Поле ФИО отредактировано!");
-                }
+                updateFio(person);
                 break;
             case "address":
-                System.out.println("Введите адрес для пользователя: ");
-                person.setAddress(scanner.nextLine());
-                System.out.println("Поле адрес отредактировано!");
+                updateAddress(person);
                 break;
             case "birthday":
-                try {
-                    System.out.println("Введите дату рождения");
-                    System.out.println("Год: ");
-                    birthdayYear = scanner.nextInt();
-                    System.out.println("Месяц: ");
-                    birthdayMonth = scanner.nextInt();
-                    System.out.println("День: ");
-                    birthdayDay = scanner.nextInt();
-
-                    person.setBirthday(LocalDate.of(birthdayYear, birthdayMonth, birthdayDay));
-                    System.out.println("Поле дата рождения отредактировано!");
-                } catch (Exception e) {
-                    System.out.println("Увы но поле дата рождения не отредактирована! Неверно введенная дата рождения!");
-                }
+                updateBirthday(person);
                 break;
             case "phones":
-                System.out.println("Для управления полем доступны команды ");
-                System.out.println("\"add\" - добавить номер телефона");
-                System.out.println("\"edit\" - отредактировать существующий");
-                System.out.println("\"del\" - удалить номер телефона");
-                System.out.println("Введите команду: ");
-                String command = scanner.nextLine();
-                switch (command) {
-                    case "add":
-                        System.out.println("Введите номер телефона: ");
-                        String phone = scanner.nextLine();
-                        person.addPhone(phone);
-                        System.out.println("Номер добавлен!");
-                        break;
-                    case "edit":
-                        System.out.println("Введите номер телефона: ");
-                        int edit = person.searchPhone(scanner.nextLine());
-                        if (edit == -1) {
-                            System.out.println("Номер телефона не найден!");
-                        } else {
-                            try {
-                                System.out.println("Введите новый номер телефона: ");
-                                person.updatePhone(edit, scanner.nextLine());
-                                System.out.println("Номер телефона отредактирован!");
-                            } catch (Exception e) {
-                                System.out.println("Во время редактирования произошла ошибка, повторите пожалуйста позже.");
-                            }
-                        }
-                        break;
-                    case "del":
-                        System.out.println("Введите номер телефона: ");
-                        int remove = person.searchPhone(scanner.nextLine());
-                        if (remove == -1) {
-                            System.out.println("Номер телефона не найден!");
-                        } else {
-                            try {
-                                person.removePhone(remove);
-                                System.out.println("Номер телефона удален!");
-                            } catch (Exception e) {
-                                System.out.println("Во время удаления произошла ошибка, повторите пожалуйста позже.");
-                            }
-                        }
-                        break;
-                    default:
-                        System.out.println("Вы ввели неизвесную команду!");
-                }
+                updatePhones(person);
                 break;
             default:
                 System.out.println("Вы ввели неизвесную команду!");
@@ -310,5 +241,97 @@ public class Main {
         } catch (Exception e) {
             System.out.println("Во время загрузки произошла ошибка, повторите пожалуйста позже.");
         }
+    }
+
+    private static void updateFio(Person person) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Введите ФИО: ");
+        if (!scanner.hasNext()) {
+            System.out.println("Увы но пользователь не изменен! Поле ФИО обязательно для заполнения!");
+        } else {
+            person.setFio(scanner.nextLine());
+            System.out.println("Поле ФИО отредактировано!");
+        }
+    }
+
+    private static void updateAddress(Person person) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Введите адрес для пользователя: ");
+        person.setAddress(scanner.nextLine());
+        System.out.println("Поле адрес отредактировано!");
+    }
+
+    private static void updateBirthday(Person person) {
+        Scanner scanner = new Scanner(System.in);
+        int birthdayYear;
+        int birthdayMonth;
+        int birthdayDay;
+        try {
+            System.out.println("Введите дату рождения");
+            System.out.println("Год: ");
+            birthdayYear = scanner.nextInt();
+            System.out.println("Месяц: ");
+            birthdayMonth = scanner.nextInt();
+            System.out.println("День: ");
+            birthdayDay = scanner.nextInt();
+            person.setBirthday(LocalDate.of(birthdayYear, birthdayMonth, birthdayDay));
+            System.out.println("Поле дата рождения отредактировано!");
+        } catch (Exception e) {
+            System.out.println("Увы но пользователь не добавлен! Неверно введенная дата рождения!");
+        }
+    }
+
+    private static void updatePhones(Person person) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Для управления полем доступны команды ");
+        System.out.println("\"add\" - добавить номер телефона");
+        System.out.println("\"edit\" - отредактировать существующий");
+        System.out.println("\"del\" - удалить номер телефона");
+        System.out.println("Введите команду: ");
+        String command = scanner.nextLine();
+        switch (command) {
+            case "add":
+                System.out.println("Введите номер телефона: ");
+                String phone = scanner.nextLine();
+                person.addPhone(phone);
+                System.out.println("Номер добавлен!");
+                break;
+            case "edit":
+                System.out.println("Введите номер телефона: ");
+                int edit = person.searchPhone(scanner.nextLine());
+                if (indexFind(edit)) {
+                    try {
+                        System.out.println("Введите новый номер телефона: ");
+                        person.updatePhone(edit, scanner.nextLine());
+                        System.out.println("Номер телефона отредактирован!");
+                    } catch (Exception e) {
+                        System.out.println("Во время редактирования произошла ошибка, повторите пожалуйста позже.");
+                    }
+                } else {
+                    System.out.println("Номер телефона не найден!");
+                }
+                break;
+            case "del":
+                System.out.println("Введите номер телефона: ");
+                int remove = person.searchPhone(scanner.nextLine());
+                if (indexFind(remove)) {
+                    try {
+                        person.removePhone(remove);
+                        System.out.println("Номер телефона удален!");
+                    } catch (Exception e) {
+                        System.out.println("Во время удаления произошла ошибка, повторите пожалуйста позже.");
+                    }
+                } else {
+                    System.out.println("Номер телефона не найден!");
+                }
+                break;
+            default:
+                System.out.println("Вы ввели неизвесную команду!");
+        }
+    }
+
+    public static Boolean indexFind(int index) {
+        Predicate<Integer> indexFind = i -> i >= 0;
+        return indexFind.test(index);
     }
 }
