@@ -168,7 +168,7 @@ public class Main {
                     phoneBook.sortedByBirthday();
                     break;
                 default:
-                    break;
+                    System.out.println("Вы ввели неизвесную команду! Вывод данных по умолчанию!");
             }
             System.out.println(phoneBook.printPeople());
         } catch (Exception e) {
