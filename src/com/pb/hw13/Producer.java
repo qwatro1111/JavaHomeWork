@@ -8,26 +8,26 @@ public class Producer implements Runnable {
     private static final int RANDOM_NUMBER_MIN = 0;
     private static final int RANDOM_NUMBER_MAX = 100;
     Random rand = new Random();
-    List<Integer> phones;
+    List<Integer> numbers;
 
-    public Producer(List<Integer> phones) {
-        this.phones = phones;
+    public Producer(List<Integer> numbers) {
+        this.numbers = numbers;
     }
 
     public void produce() {
-        synchronized (phones) {
-            while (phones.size() >= SIZE_LIST_NUMBERS) {
+        synchronized (numbers) {
+            while (numbers.size() >= SIZE_LIST_NUMBERS) {
                 System.out.println("Список чисел полон!");
                 try {
-                    phones.wait();
+                    numbers.wait();
                 } catch (InterruptedException e) {
                     System.err.println(e.getMessage());
                 }
             }
-            phones.add(getRandNumber(RANDOM_NUMBER_MIN, RANDOM_NUMBER_MAX));
-            System.out.println("+ Пополнение списка " + phones);
+            numbers.add(getRandNumber(RANDOM_NUMBER_MIN, RANDOM_NUMBER_MAX));
+            System.out.println("+ Пополнение списка " + numbers);
 
-            phones.notifyAll();
+            numbers.notifyAll();
         }
     }
 
